@@ -10,6 +10,7 @@ import {
 
 import { useFonts } from "expo-font";
 import * as Icon from "react-native-feather";
+import firebase from "../../db/firebase";
 
 const image = require("../../../assets/Booking-cuate.png");
 
@@ -22,9 +23,29 @@ const LoginScreen = ({ navigation }) => {
   });
 
   const [showPass, setShowPass] = useState(true);
+  const [userState, setUserState] = useState({
+    email: "",
+    password: "",
+  });
 
   const showPassword = () => {
     setShowPass(!showPass);
+  };
+
+  const handleChangeText = (name, value) => {
+    setUserState({ ...userState, [name]: value });
+  };
+
+  const loginUser = () => {
+    firebase.auth
+      .signInWithEmailAndPassword(userState.email, userState.password)
+      .then((userCredential) => {
+        navigation.push("Home");
+        setUserState({
+          name: "",
+          password: "",
+        });
+      });
   };
 
   if (fontsLoaded) {
@@ -40,11 +61,18 @@ const LoginScreen = ({ navigation }) => {
           <View style={styles.inputsContainer}>
             <Text style={styles.emailText}>Email</Text>
             <View style={styles.emailInput}>
-              <TextInput placeholder="Email" />
+              <TextInput
+                placeholder="Email"
+                onChangeText={(value) => handleChangeText("email", value)}
+              />
             </View>
             <Text style={styles.emailText}>Password</Text>
             <View style={styles.emailInput}>
-              <TextInput placeholder="Password" secureTextEntry={showPass} />
+              <TextInput
+                placeholder="Password"
+                secureTextEntry={showPass}
+                onChangeText={(value) => handleChangeText("password", value)}
+              />
               <TouchableOpacity onPress={showPassword}>
                 {showPass === true ? (
                   <Icon.Eye
@@ -73,13 +101,16 @@ const LoginScreen = ({ navigation }) => {
                   fill="#462255"
                   width={21}
                   height={21}
-                  style={{ paddingLeft: '75%' }}
+                  style={{ paddingLeft: "75%" }}
                 />
               </TouchableOpacity>
             </View>
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.touchableStyles}>
+            <TouchableOpacity
+              style={styles.touchableStyles}
+              onPress={() => loginUser()}
+            >
               <Text style={styles.buttonText}>Log in</Text>
             </TouchableOpacity>
           </View>

@@ -7,13 +7,16 @@ import {
   TouchableOpacity,
   TextInput,
   Platform,
-  ScrollView,
   Image,
 } from "react-native";
 
 import { useFonts } from "expo-font";
 import * as Icon from "react-native-feather";
 import * as ImagePicker from "expo-image-picker";
+
+import firebase from "../../db/firebase";
+
+const getFirestoreRef = (path) => firebase.db.collection(path);
 
 const RegisterScreen = ({ navigation }) => {
   let [fontsLoaded] = useFonts({
@@ -25,6 +28,17 @@ const RegisterScreen = ({ navigation }) => {
 
   const [showPass, setShowPass] = useState(true);
   const [userImage, setUserImage] = useState(null);
+
+  const [userState, setUserState] = useState({
+    name: "",
+    email: "",
+    lastName: "",
+    password: "",
+  });
+
+  const handleChangeText = (name, value) => {
+    setUserState({ ...userState, [name]: value });
+  };
 
   const showPassword = () => {
     setShowPass(!showPass);
@@ -51,6 +65,39 @@ const RegisterScreen = ({ navigation }) => {
     console.log(result);
     if (!result.cancelled) {
       setUserImage(result.uri);
+    }
+  };
+
+  const createUser = async () => {
+    try {
+      const { user } = await firebase.auth.createUserWithEmailAndPassword(
+        userState.email,
+        userState.password
+      );
+      if (user.uid) {
+        await getFirestoreRef("users").doc(user.uid).set({
+          email: userState.email,
+          name: userState.name,
+          lastName: userState.lastName,
+          password: userState.password,
+        });
+
+        navigation.push("Home");
+      } else {
+        await getFirestoreRef("users").add(
+          {
+            email: userState.email,
+            name: userState.name,
+            lastName: userState.lastName,
+            password: userState.password,
+          },
+          user.uid
+        );
+
+        navigation.push("Home");
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -98,22 +145,35 @@ const RegisterScreen = ({ navigation }) => {
           <View style={{ top: "1%", left: "10%" }}>
             <Text style={styles.emailText}>Email</Text>
             <View style={styles.emailInput}>
-              <TextInput placeholder="Email" />
+              <TextInput
+                placeholder="Email"
+                onChangeText={(value) => handleChangeText("email", value)}
+              />
             </View>
 
             <Text style={styles.emailText}>Name</Text>
             <View style={styles.emailInput}>
-              <TextInput placeholder="Name" />
+              <TextInput
+                placeholder="Name"
+                onChangeText={(value) => handleChangeText("name", value)}
+              />
             </View>
 
             <Text style={styles.emailText}>Last name</Text>
             <View style={styles.emailInput}>
-              <TextInput placeholder="Last name" />
+              <TextInput
+                placeholder="Last name"
+                onChangeText={(value) => handleChangeText("lastName", value)}
+              />
             </View>
 
             <Text style={styles.emailText}>Password</Text>
             <View style={styles.emailInput}>
-              <TextInput placeholder="Password" secureTextEntry={showPass} />
+              <TextInput
+                placeholder="Password"
+                secureTextEntry={showPass}
+                onChangeText={(value) => handleChangeText("password", value)}
+              />
               <TouchableOpacity onPress={showPassword}>
                 {showPass === true ? (
                   <Icon.Eye
@@ -133,7 +193,10 @@ const RegisterScreen = ({ navigation }) => {
               </TouchableOpacity>
             </View>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.button}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => createUser()}
+              >
                 <Text style={styles.buttonText}>Register</Text>
               </TouchableOpacity>
             </View>
