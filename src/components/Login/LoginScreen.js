@@ -39,7 +39,7 @@ const LoginScreen = ({ navigation }) => {
   const loginUser = () => {
     firebase.auth
       .signInWithEmailAndPassword(userState.email, userState.password)
-      .then((userCredential) => {
+      .then(() => {
         navigation.push("Home");
         setUserState({
           name: "",
@@ -52,44 +52,45 @@ const LoginScreen = ({ navigation }) => {
     return (
       <View style={styles.container}>
         <View style={styles.titleContainer}>
-          <Text style={styles.TitleLogin}>Welcome to {"\n"}BookingTh!</Text>
-          <Text style={styles.subTitleLogin}>
-            Choose the best place to chill out
-          </Text>
+          <Text style={styles.TitleLogin}>Welcome {"\n"}to BookingTh!</Text>
         </View>
         <ImageBackground source={image} style={styles.ImageBackground}>
-          <View style={styles.inputsContainer}>
-            <Text style={styles.emailText}>Email</Text>
-            <View style={styles.emailInput}>
-              <TextInput
-                placeholder="Email"
-                onChangeText={(value) => handleChangeText("email", value)}
-              />
-            </View>
-            <Text style={styles.emailText}>Password</Text>
-            <View style={styles.emailInput}>
-              <TextInput
-                placeholder="Password"
-                secureTextEntry={showPass}
-                onChangeText={(value) => handleChangeText("password", value)}
-              />
-              <TouchableOpacity onPress={showPassword}>
-                {showPass === true ? (
-                  <Icon.Eye
-                    stroke="#462255"
-                    fill="#fff"
-                    width={21}
-                    height={21}
-                  />
-                ) : (
-                  <Icon.EyeOff
-                    stroke="#462255"
-                    fill="#fff"
-                    width={21}
-                    height={21}
-                  />
-                )}
-              </TouchableOpacity>
+          <View style={styles.loginContainer}>
+            <View style={styles.inputsContainer}>
+              <Text style={styles.emailText}>Email</Text>
+              <View style={styles.emailInput}>
+                <TextInput
+                  style={{ width: "100%" }}
+                  placeholder="Email"
+                  onChangeText={(value) => handleChangeText("email", value)}
+                />
+              </View>
+              <Text style={styles.emailText}>Password</Text>
+              <View style={styles.emailInput}>
+                <TextInput
+                  style={{ width: "95%" }}
+                  placeholder="Password"
+                  secureTextEntry={showPass}
+                  onChangeText={(value) => handleChangeText("password", value)}
+                />
+                <TouchableOpacity onPress={showPassword}>
+                  {showPass === true ? (
+                    <Icon.Eye
+                      stroke="#462255"
+                      fill="#fff"
+                      width={21}
+                      height={21}
+                    />
+                  ) : (
+                    <Icon.EyeOff
+                      stroke="#462255"
+                      fill="#fff"
+                      width={21}
+                      height={21}
+                    />
+                  )}
+                </TouchableOpacity>
+              </View>
             </View>
             <View style={styles.registerContainer}>
               <Text style={styles.registerText}>
@@ -101,18 +102,17 @@ const LoginScreen = ({ navigation }) => {
                   fill="#462255"
                   width={21}
                   height={21}
-                  style={{ paddingLeft: "75%" }}
                 />
               </TouchableOpacity>
             </View>
-          </View>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.touchableStyles}
-              onPress={() => loginUser()}
-            >
-              <Text style={styles.buttonText}>Log in</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.touchableStyles}
+                onPress={() => loginUser()}
+              >
+                <Text style={styles.buttonText}>Log in</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </ImageBackground>
       </View>
@@ -129,35 +129,34 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    position: "relative",
+    overflow: "hidden",
+    width: "100%",
+    height: "100%",
   },
   titleContainer: {
+    marginTop: "30%",
     alignItems: "center",
-    height: "35%",
-    backgroundColor: "#462255",
     justifyContent: "center",
-    borderBottomEndRadius: 160,
   },
   TitleLogin: {
-    textAlign: "center",
-    marginBottom: 20,
     fontFamily: "OpenSans-bold",
-    fontSize: 30,
-    color: "#F2F4F3",
-  },
-  subTitleLogin: {
-    fontFamily: "OpenSans-semiBold",
-    fontSize: 14,
-    color: "#F2F4F3",
+    fontSize: 35,
+    color: "#462255",
   },
   ImageBackground: {
+    resizeMode: "contain",
     justifyContent: "center",
-    height: "75%",
+    height: "80%",
+    width: "100%",
+  },
+  loginContainer: {
+    width: "100%",
+    height: "30%",
+    justifyContent: "center",
   },
   inputsContainer: {
-    textAlign: "left",
-    left: "10%",
-    bottom: "13%",
+    justifyContent: "center",
+    left: '10%'
   },
   emailText: {
     fontFamily: "OpenSans-semiBold",
@@ -166,9 +165,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   emailInput: {
+    alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
     fontFamily: "OpenSans-bold",
     width: "80%",
     paddingVertical: 8,
@@ -181,11 +180,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   buttonContainer: {
-    width: "80%",
-    left: "10%",
-    top: "5%",
+    width: "100%",
+    height: "80%",
+    justifyContent: "flex-end",
+    alignItems: "center",
   },
   touchableStyles: {
+    width: "80%",
     borderWidth: 1,
     borderRadius: 8,
     marginTop: "25%",
@@ -199,13 +200,17 @@ const styles = StyleSheet.create({
     color: "#F2F4F3",
   },
   registerContainer: {
+    width: "88.5%",
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
   },
   registerText: {
-    fontFamily: "OpenSans-semiBold",
+    fontFamily: "OpenSans-bold",
+    color: "#462255",
     fontSize: 12,
     letterSpacing: 0.2,
-    marginBottom: 10,
+    paddingRight:  15
   },
 });
 
