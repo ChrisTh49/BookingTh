@@ -8,6 +8,7 @@ import {
   TextInput,
   Platform,
   Image,
+  ScrollView,
 } from "react-native";
 
 import { useFonts } from "expo-font";
@@ -70,31 +71,34 @@ const RegisterScreen = ({ navigation }) => {
 
   const createUser = async () => {
     try {
-      const { user } = await firebase.auth.createUserWithEmailAndPassword(
-        userState.email,
-        userState.password
-      );
-      if (user.uid) {
-        await getFirestoreRef("users").doc(user.uid).set({
-          email: userState.email,
-          name: userState.name,
-          lastName: userState.lastName,
-          password: userState.password,
-        });
-
-        navigation.push("Home");
+      if (userState.email !== /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/) {
+        alert("The email is not correct");
       } else {
-        await getFirestoreRef("users").add(
-          {
+        const { user } = await firebase.auth.createUserWithEmailAndPassword(
+          userState.email,
+          userState.password
+        );
+        if (user.uid) {
+          await getFirestoreRef("users").doc(user.uid).set({
             email: userState.email,
             name: userState.name,
             lastName: userState.lastName,
             password: userState.password,
-          },
-          user.uid
-        );
+          });
 
-        navigation.push("Home");
+          navigation.push("Home");
+        } else {
+          await getFirestoreRef("users").add(
+            {
+              email: userState.email,
+              name: userState.name,
+              lastName: userState.lastName,
+              password: userState.password,
+            },
+            user.uid
+          );
+          navigation.push("Home");
+        }
       }
     } catch (error) {
       console.log(error);
@@ -110,98 +114,109 @@ const RegisterScreen = ({ navigation }) => {
               style={styles.backOption}
               onPress={() => navigation.push("Login")}
             >
-              <Icon.ArrowLeftCircle
+              <Icon.ArrowLeft
                 stroke="#462255"
                 fill="#fff"
-                width={35}
-                height={40}
+                width={30}
+                height={30}
               />
             </TouchableOpacity>
             <Text style={styles.title}>Register</Text>
           </View>
         </View>
 
-        <ImageBackground
-          style={styles.ImageBackground}
-          source={require("../../../assets/system-cuate.png")}
-        >
-          <TouchableOpacity onPress={pickImage}>
-            <View style={styles.imagePickerCont}>
-              <Text style={{ top: 40, color: "#fff" }}>Pick an image</Text>
-
-              {userImage && (
-                <Image
-                  source={{ uri: userImage }}
-                  style={{
-                    height: 100,
-                    width: 100,
-                    borderRadius: 180,
-                    bottom: 20,
-                  }}
-                />
-              )}
-            </View>
-          </TouchableOpacity>
-          <View style={{ top: "1%", left: "10%" }}>
-            <Text style={styles.emailText}>Email</Text>
-            <View style={styles.emailInput}>
-              <TextInput
-                placeholder="Email"
-                onChangeText={(value) => handleChangeText("email", value)}
-              />
-            </View>
-
-            <Text style={styles.emailText}>Name</Text>
-            <View style={styles.emailInput}>
-              <TextInput
-                placeholder="Name"
-                onChangeText={(value) => handleChangeText("name", value)}
-              />
-            </View>
-
-            <Text style={styles.emailText}>Last name</Text>
-            <View style={styles.emailInput}>
-              <TextInput
-                placeholder="Last name"
-                onChangeText={(value) => handleChangeText("lastName", value)}
-              />
-            </View>
-
-            <Text style={styles.emailText}>Password</Text>
-            <View style={styles.emailInput}>
-              <TextInput
-                placeholder="Password"
-                secureTextEntry={showPass}
-                onChangeText={(value) => handleChangeText("password", value)}
-              />
-              <TouchableOpacity onPress={showPassword}>
-                {showPass === true ? (
-                  <Icon.Eye
-                    stroke="#462255"
-                    fill="#fff"
-                    width={21}
-                    height={21}
-                  />
-                ) : (
-                  <Icon.EyeOff
-                    stroke="#462255"
-                    fill="#fff"
-                    width={21}
-                    height={21}
-                  />
-                )}
+        <ScrollView>
+          <ImageBackground
+            style={styles.ImageBackground}
+            source={require("../../../assets/system-cuate.png")}
+          >
+            <View style={styles.inputsContainer}>
+              <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
+                <View style={styles.imagePickerCont}>
+                  {userImage !== null ? (
+                    <Image
+                      source={{ uri: userImage }}
+                      style={{
+                        height: 100,
+                        width: 100,
+                        borderRadius: 180,
+                      }}
+                    />
+                  ) : (
+                    <Text style={{ color: "#fff" }}>Pick an image</Text>
+                  )}
+                </View>
               </TouchableOpacity>
+              <View style={{ top: "1%", left: "10%" }}>
+                <Text style={styles.emailText}>Email</Text>
+                <View style={styles.emailInput}>
+                  <TextInput
+                    placeholder="Email"
+                    onChangeText={(value) => handleChangeText("email", value)}
+                    style={{ width: "100%" }}
+                  />
+                </View>
+
+                <Text style={styles.emailText}>Name</Text>
+                <View style={styles.emailInput}>
+                  <TextInput
+                    placeholder="Name"
+                    onChangeText={(value) => handleChangeText("name", value)}
+                    style={{ width: "100%" }}
+                  />
+                </View>
+
+                <Text style={styles.emailText}>Last name</Text>
+                <View style={styles.emailInput}>
+                  <TextInput
+                    placeholder="Last name"
+                    onChangeText={(value) =>
+                      handleChangeText("lastName", value)
+                    }
+                    style={{ width: "100%" }}
+                  />
+                </View>
+
+                <Text style={styles.emailText}>Password</Text>
+                <View style={styles.emailInput}>
+                  <TextInput
+                    placeholder="Password"
+                    secureTextEntry={showPass}
+                    onChangeText={(value) =>
+                      handleChangeText("password", value)
+                    }
+                    style={{ width: "95%" }}
+                  />
+                  <TouchableOpacity onPress={showPassword}>
+                    {showPass === true ? (
+                      <Icon.Eye
+                        stroke="#462255"
+                        fill="#fff"
+                        width={21}
+                        height={21}
+                      />
+                    ) : (
+                      <Icon.EyeOff
+                        stroke="#462255"
+                        fill="#fff"
+                        width={21}
+                        height={21}
+                      />
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => createUser()}
+                >
+                  <Text style={styles.buttonText}>Register</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => createUser()}
-              >
-                <Text style={styles.buttonText}>Register</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </ImageBackground>
+          </ImageBackground>
+        </ScrollView>
       </View>
     );
   } else {
@@ -216,41 +231,47 @@ const RegisterScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    overflow: "hidden",
+    width: "100%",
+    height: "100%",
   },
   headerContainer: {
-    height: "20%",
-    backgroundColor: "#462255",
-    justifyContent: "center",
-    borderBottomEndRadius: 100,
+    marginVertical: "10%",
   },
   titleContainer: {
-    top: 15,
     flexDirection: "row",
+    alignItems: "center",
   },
   backOption: {
-    paddingRight: "22%",
-    paddingLeft: "5%",
+    paddingLeft: "3%",
+    paddingRight: "25%",
   },
   title: {
-    textAlign: "center",
     fontFamily: "OpenSans-bold",
-    fontSize: 26,
-    color: "#F2F4F3",
+    fontSize: 25,
+    color: "black",
   },
   ImageBackground: {
-    height: "85%",
-    top: "5%",
+    resizeMode: "contain",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+    width: "100%",
+  },
+  inputsContainer: {
+    justifyContent: "center",
+    width: "100%",
   },
   imagePicker: {
-    justifyContent: "center",
+    alignItems: "center",
   },
   imagePickerCont: {
     alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "rgba(	70, 34, 85,0.8)",
     height: 100,
     width: 100,
     borderRadius: 180,
-    left: "38%",
   },
   emailText: {
     fontFamily: "OpenSans-semiBold",
@@ -274,13 +295,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   buttonContainer: {
-    width: "80%",
-    top: "5%",
+    width: "100%",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    marginBottom: "5%",
   },
   button: {
+    width: "80%",
     borderWidth: 1,
     borderRadius: 8,
-    marginTop: "10%",
+    marginTop: "25%",
     paddingVertical: 14,
     backgroundColor: "#462255",
   },
