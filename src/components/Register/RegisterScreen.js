@@ -71,7 +71,8 @@ const RegisterScreen = ({ navigation }) => {
 
   const createUser = async () => {
     try {
-      if (userState.email !== /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/) {
+      const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+      if (reg.test(userState.email) === false) {
         alert("The email is not correct");
       } else {
         const { user } = await firebase.auth.createUserWithEmailAndPassword(
@@ -86,7 +87,9 @@ const RegisterScreen = ({ navigation }) => {
             password: userState.password,
           });
 
-          navigation.push("Home");
+          setTimeout(() => {
+            navigation.push("Login");
+          }, 2000);
         } else {
           await getFirestoreRef("users").add(
             {
@@ -97,7 +100,9 @@ const RegisterScreen = ({ navigation }) => {
             },
             user.uid
           );
-          navigation.push("Home");
+          setTimeout(() => {
+            navigation.push("Login");
+          }, 2000);
         }
       }
     } catch (error) {
@@ -154,6 +159,8 @@ const RegisterScreen = ({ navigation }) => {
                     placeholder="Email"
                     onChangeText={(value) => handleChangeText("email", value)}
                     style={{ width: "100%" }}
+                    autoCapitalize="none"
+                    value={userState.email}
                   />
                 </View>
 
@@ -163,6 +170,7 @@ const RegisterScreen = ({ navigation }) => {
                     placeholder="Name"
                     onChangeText={(value) => handleChangeText("name", value)}
                     style={{ width: "100%" }}
+                    value={userState.name}
                   />
                 </View>
 
@@ -174,6 +182,7 @@ const RegisterScreen = ({ navigation }) => {
                       handleChangeText("lastName", value)
                     }
                     style={{ width: "100%" }}
+                    value={userState.lastName}
                   />
                 </View>
 
@@ -186,6 +195,7 @@ const RegisterScreen = ({ navigation }) => {
                       handleChangeText("password", value)
                     }
                     style={{ width: "95%" }}
+                    value={userState.password}
                   />
                   <TouchableOpacity onPress={showPassword}>
                     {showPass === true ? (

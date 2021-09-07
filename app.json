@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "tasksApp",
-    "slug": "tasksApp",
+    "name": "BookingTh",
+    "slug": "BookingTh",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

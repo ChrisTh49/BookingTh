@@ -40,11 +40,11 @@ const LoginScreen = ({ navigation }) => {
     firebase.auth
       .signInWithEmailAndPassword(userState.email, userState.password)
       .then(() => {
-        navigation.push("Home");
-        setUserState({
-          name: "",
-          password: "",
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Home" }],
         });
+        navigation.push("Home");
       });
   };
 
@@ -63,6 +63,7 @@ const LoginScreen = ({ navigation }) => {
                   style={{ width: "100%" }}
                   placeholder="Email"
                   onChangeText={(value) => handleChangeText("email", value)}
+                  autoCapitalize="none"
                 />
               </View>
               <Text style={styles.emailText}>Password</Text>
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
   },
   inputsContainer: {
     justifyContent: "center",
-    left: '10%'
+    left: "10%",
   },
   emailText: {
     fontFamily: "OpenSans-semiBold",
@@ -210,7 +211,7 @@ const styles = StyleSheet.create({
     color: "#462255",
     fontSize: 12,
     letterSpacing: 0.2,
-    paddingRight:  15
+    paddingRight: 15,
   },
 });
 
